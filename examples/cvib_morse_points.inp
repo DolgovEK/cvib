@@ -1,0 +1,8 @@
+
+Cvib.x test input file
+February 2017
+
+{control: task morse, potential points, friend none}
+
+{morse: W = 0.2041241, D = 12.0, nbas = 128 , xstart = -4.5, xend = 25.0 }
+

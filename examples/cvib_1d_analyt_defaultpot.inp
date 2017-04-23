@@ -1,0 +1,9 @@
+
+Cvib.x test input file
+March 2017
+Pointwise potential, default harmonic input
+
+{control: task 1D, potential analytic, friend none}
+
+{1D: nbas = 128 , xstart = -12.0, xend = 12.0, npow = 8 }
+
