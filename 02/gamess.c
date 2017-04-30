@@ -17,6 +17,7 @@
 int gamess_1d(const int task_type,const int nmodes,const int npairs,const int nbas);
 int gamess_get_nmodes_nbas(int *nmodes,int *nbas);
 int parse_gamess_out(const int nmodes, const int npairs, double harmonic[nmodes], double xrange[nmodes], double deltax[nmodes], double fdiag[nmodes][4], double foffdiag[npairs][8]);
+static double pot_1d(const int nmodes,const int mode,const double x,const double fdiag[nmodes][4]);
 void printmat3(const int dim,const double *mat); 
 
 
@@ -29,8 +30,8 @@ int gamess_1d(const int task_type,const int nmodes,const int npairs,const int nb
 
 /******************************************************************************/
 {
-double dtemp1,levels[nbas],ifi[4];								//temporal values
-double a,xrange[nmodes],deltax[nmodes],x[nbas];					//basis parameters
+double levels[nbas],ifi[4];										//temporal values
+double xrange[nmodes],deltax[nmodes],x[nbas];					//parameters of basis
 double harmonic[nmodes],fdiag[nmodes][4],foffdiag[npairs][8];	//parameters of potential
 // Allocated on stack:
 //
@@ -125,7 +126,7 @@ if (s==NULL){
 }
 
 // todo - add dimension for modes (to keep all WFs for future use)
-double (*h)[nmodes][nbas] = malloc( sizeof(double[nmodes][nbas][nbas]));
+double (*h)[nbas] = malloc( sizeof(double[nbas][nbas]));
 if (h==NULL){
 	printf(" Error while allocating memory for h \n");
 	exit (1);
@@ -152,22 +153,22 @@ for(mode=0;mode<nmodes;mode++)
 	for (i = 0; i < nbas; ++i)
 		x[i] = -xrange[mode] + deltax[mode] * (double) i;
 
-	a = C * C /(deltax[mode] * deltax[mode]);
-
 // print x and potential
-	printf("\n Basis points :\n");
+	printf("\n Potential at basis points :\n");
+	printf("\n  No               x            V(x)\n");
 	for (i = 0; i < nbas; ++i)
-		printf(" %3d    %12.6f\n",i,x[i]);
+		printf(" %3d    %12.6f    %12.9f\n",i,x[i],pot_1d(nmodes,mode,x[i],fdiag));
 
 // fill H,S
 
+	double a = C * C /(deltax[mode] * deltax[mode]);
 	double a2 = a * a; // a[i] * a[j];
 	double bi = 4.0 * a;		// 2* exponent coefficient
 
 	for(i=0;i<nbas;i++){
 	for(j=0;j<nbas;j++){
 
-		dtemp1 = x[i] - x[j];
+		double dtemp1 = x[i] - x[j];
 		
 //    Compact code for overlap matrix S for equidistant basis
 		s[i][j] = exp(- a * dtemp1 * dtemp1 * 0.5);
@@ -182,7 +183,7 @@ for(mode=0;mode<nmodes;mode++)
 		ifi[2] = ifi[1] * xij + ifi[0] / bi * 2.0; 	// integral <phi*x^3*phi>
 		ifi[3] = ifi[2] * xij + ifi[1] / bi * 3.0; 	// integral <phi*x^4*phi>
 
-		h[mode][i][j] = s[i][j] * (
+		h[i][j] = s[i][j] * (
 		      ifi[1] * fdiag[mode][0]            	// potential, x^2 part
 		+     ifi[2] * fdiag[mode][1]            	// potential, x^3 part
 		+     ifi[3] * fdiag[mode][2]            	// potential, x^4 part
@@ -190,8 +191,6 @@ for(mode=0;mode<nmodes;mode++)
 		- 2.0*ifi[0] * a2 * (x[i] + x[j])	// kinetic energy , x   part 
 		+ 2.0        * a2 *  x[i] * x[j]);	// kinetic energy , const part
 		
-//		h[mode][i][j] *= s[i][j];
-
 	}
 	}
 
@@ -211,7 +210,7 @@ lapack_int info;
 lapack_int itype=1;
 char jobz='V',uplo='U';
 
-info=LAPACKE_dsygv(LAPACK_ROW_MAJOR,itype,jobz,uplo,nbas,&h[mode][0][0],nbas,&s[0][0],nbas,levels);
+info=LAPACKE_dsygv(LAPACK_ROW_MAJOR,itype,jobz,uplo,nbas,&h[0][0],nbas,&s[0][0],nbas,levels);
 /* lapack_int LAPACKE_dsygv( int matrix_layout, lapack_int itype, char jobz,
                           char uplo, lapack_int n, double* a, lapack_int lda,
                           double* b, lapack_int ldb, double* w ); */
@@ -229,7 +228,7 @@ for(i=0;i<nbas;++i){
 printf("\n");
 
 printf("\n Eigenvectors for mode = %2d \n",mode);
-printmat3(nbas,&h[mode][0][0]);
+printmat3(nbas,&h[0][0]);
 
 } // end of for(mode=0;mode<nmodes;mode++)
 
@@ -276,6 +275,7 @@ int parse_gamess_out(const int nmodes, const int npairs, double harmonic[nmodes]
 {
 char line[82],*pos;
 FILE *fp;
+int ex;
 int freq_line_count,freq_line_max;
 int harmonic_count=0,i,j;
 
@@ -336,16 +336,29 @@ if ((fp = fopen("output","r"))!=NULL)
 			for(i=0;i<nmodes;i++)
 			{
 				if(fgets(line,80,fp)!=NULL)
+				{
 					fdiag[i][0]=atof(&line[15]);			// Hii
+					ex=atoi(&line[28]);
+					fdiag[i][0]*=pow(10,ex);
+				}
 				
 				if(fgets(line,80,fp)!=NULL)
+				{
 					fdiag[i][1]=atof(&line[15]);			// Tiii
+					ex=atoi(&line[28]);
+					fdiag[i][1]*=pow(10,ex);
+				}
 
 				if(fgets(line,80,fp)!=NULL)
+				{
 					fdiag[i][2]=atof(&line[15]);			// Uiiii
+					ex=atoi(&line[28]);
+					fdiag[i][2]*=pow(10,ex);
+				}
 				
 				for(j=0;j<15;j++) 
 					if(fgets(line,80,fp)!=NULL);// skip to the next mode
+				
 			}
 		}
 
@@ -354,19 +367,39 @@ if ((fp = fopen("output","r"))!=NULL)
 			for(i=0;i<npairs;i++)
 			{
 				if(fgets(line,80,fp)!=NULL)
+				{
 					foffdiag[i][0]=atof(&line[15]);			// Tiij
+					ex=atoi(&line[28]);
+					foffdiag[i][0]*=pow(10,ex);
+				}
 				
 				if(fgets(line,80,fp)!=NULL)
+				{
 					foffdiag[i][1]=atof(&line[15]);			// Tjji
+					ex=atoi(&line[28]);
+					foffdiag[i][1]*=pow(10,ex);
+				}
 				
 				if(fgets(line,80,fp)!=NULL)
+				{
 					foffdiag[i][2]=atof(&line[15]);			// Uiiij
+					ex=atoi(&line[28]);
+					foffdiag[i][2]*=pow(10,ex);
+				}
 				
 				if(fgets(line,80,fp)!=NULL)
+				{
 					foffdiag[i][3]=atof(&line[15]);			// Ujjji
+					ex=atoi(&line[28]);
+					foffdiag[i][3]*=pow(10,ex);
+				}
 				
 				if(fgets(line,80,fp)!=NULL)
+				{
 					foffdiag[i][4]=atof(&line[15]);			// Uiijj
+					ex=atoi(&line[28]);
+					foffdiag[i][4]*=pow(10,ex);
+				}
 				
 				if(fgets(line,80,fp)!=NULL)
 					if(fgets(line,80,fp)!=NULL);			// just skip 2 lines to the next mode pair
@@ -435,4 +468,13 @@ if (nlast>0)
 	} 	
 }
 return;
+}
+
+static double pot_1d(const int nmodes,const int mode,const double x,const double fdiag[nmodes][4])
+{
+double result;
+	
+result= x * x * (x * (x * fdiag[mode][2] + fdiag[mode][1]) + fdiag[mode][0]);	
+	
+return result;	
 }
