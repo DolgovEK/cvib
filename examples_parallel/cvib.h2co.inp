@@ -1,0 +1,138 @@
+
+Cvib.x test input file
+June 2017
+QFF potential,  VMP2 calculation
+data below are for H2CO (GAMESS(US), CCSD(T)/cc-pVTZ)
+
+ {control: task VSCF, potential analytic, friend none}
+
+ {sizing nmodes =   6, nbas =  16}
+
+ {ci blocksize =  13, maxit =   5, convtol = 5.00e-04}
+
+ {basis  mode        xrange       deltax
+            0 +33.148356000 +4.419781000
+            1 +33.523792000 +4.469839000
+            2 +42.998096000 +5.733079000
+            3 +46.184446000 +6.157926000
+            4 +50.830984000 +6.777465000
+            5 +52.552427000 +7.006990000
+ }
+
+ {qff 
+ Mode =  0
+ Hii   = +3.39701450e-01
+ Tiii  = +1.35559800e-06
+ Uiiii = +1.73603670e+00
+ Mode =  1
+ Hii   = +3.24737770e-01
+ Tiii  = -7.52592870e-01
+ Uiiii = +1.43987400e+00
+ Mode =  2
+ Hii   = +1.19990950e-01
+ Tiii  = -1.43120360e-01
+ Uiiii = +1.52150920e-01
+ Mode =  3
+ Hii   = +9.01493130e-02
+ Tiii  = +2.77623130e-03
+ Uiiii = +1.98708030e-03
+ Mode =  4
+ Hii   = +6.14371820e-02
+ Tiii  = +7.89191280e-07
+ Uiiii = +4.23515830e-02
+ Mode =  5
+ Hii   = +5.37742370e-02
+ Tiii  = -3.80563550e-08
+ Uiiii = +6.09736830e-02
+ Mode pair =  0 ,  1; pair #   0
+ Tiij  = -8.03824730e-01
+ Tjji  = +6.45822200e-07
+ Uiiij = +9.33730410e-06
+ Ujjji = +8.56116890e-06
+ Uiijj = +1.59735330e+00
+ Mode pair =  0 ,  2; pair #   1
+ Tiij  = +5.66305490e-02
+ Tjji  = -1.35582700e-07
+ Uiiij = -5.33169260e-06
+ Ujjji = -2.36188670e-06
+ Uiijj = -1.11447780e-01
+ Mode pair =  0 ,  3; pair #   2
+ Tiij  = -5.17015810e-02
+ Tjji  = -8.33325900e-08
+ Uiiij = -2.14156690e-06
+ Ujjji = -1.75375480e-06
+ Uiijj = -2.62424620e-01
+ Mode pair =  0 ,  4; pair #   3
+ Tiij  = +3.05384900e-06
+ Tjji  = -1.45760340e-06
+ Uiiij = +1.09240080e-01
+ Ujjji = +1.59298530e-02
+ Uiijj = -2.66767990e-01
+ Mode pair =  0 ,  5; pair #   4
+ Tiij  = -1.29216860e-06
+ Tjji  = +7.49874520e-07
+ Uiiij = +6.89800190e-07
+ Ujjji = -1.97599870e-07
+ Uiijj = -3.69566450e-01
+ Mode pair =  1 ,  2; pair #   5
+ Tiij  = +8.17578590e-03
+ Tjji  = +2.42783310e-02
+ Uiiij = -2.68755230e-02
+ Ujjji = -7.38661040e-03
+ Uiijj = -6.50045370e-02
+ Mode pair =  1 ,  3; pair #   6
+ Tiij  = +2.27297100e-05
+ Tjji  = +2.11762690e-02
+ Uiiij = +9.69398240e-03
+ Ujjji = -1.64093840e-02
+ Uiijj = -1.90772830e-01
+ Mode pair =  1 ,  4; pair #   7
+ Tiij  = +4.94854360e-06
+ Tjji  = +5.52507720e-02
+ Uiiij = -8.26220940e-07
+ Ujjji = -1.09147340e-07
+ Uiijj = -2.48622560e-01
+ Mode pair =  1 ,  5; pair #   8
+ Tiij  = -1.26346680e-06
+ Tjji  = +7.50126890e-02
+ Uiiij = +6.47897440e-07
+ Ujjji = -1.61235980e-07
+ Uiijj = -3.06868790e-01
+ Mode pair =  2 ,  3; pair #   9
+ Tiij  = -3.33610850e-02
+ Tjji  = -2.86766470e-02
+ Uiiij = +4.28912800e-02
+ Ujjji = +5.32491030e-04
+ Uiijj = +1.88082610e-02
+ Mode pair =  2 ,  4; pair #  10
+ Tiij  = +3.00814430e-06
+ Tjji  = -3.67623430e-03
+ Uiiij = +1.53409670e-07
+ Ujjji = +9.32968730e-08
+ Uiijj = +1.70395050e-03
+ Mode pair =  2 ,  5; pair #  11
+ Tiij  = -7.68021100e-07
+ Tjji  = -8.95371230e-03
+ Uiiij = -3.99700920e-07
+ Ujjji = +8.92199890e-08
+ Uiijj = -7.63843540e-03
+ Mode pair =  3 ,  4; pair #  12
+ Tiij  = +2.60736650e-06
+ Tjji  = -1.86408290e-02
+ Uiiij = -6.15626290e-08
+ Ujjji = -1.44609850e-07
+ Uiijj = +1.92911370e-02
+ Mode pair =  3 ,  5; pair #  13
+ Tiij  = -6.66793800e-07
+ Tjji  = +9.02394760e-03
+ Uiiij = -4.25741680e-07
+ Ujjji = -4.67360870e-08
+ Uiijj = +4.21722190e-03
+ Mode pair =  4 ,  5; pair #  14
+ Tiij  = -5.48238110e-07
+ Tjji  = +2.80343300e-06
+ Uiiij = -1.43373600e-07
+ Ujjji = -3.44908580e-07
+ Uiijj = +1.33533700e-02
+ }
+

@@ -1,0 +1,57 @@
+
+Cvib.x test input file
+June 2017
+QFF potential,  VCI calculation
+data below are for H2O (GAMESS(US), CCSD(T)/cc-pVQZ)
+
+{control: task VCI, potential analytic, friend gamess qff}
+
+{sizing nmodes =   3, nbas =  32}
+
+{basis   mode        xrange       deltax
+            0 +34.152588000 +2.203393000
+            1 +34.623976000 +2.233805000
+            2 +52.710131000 +3.400654000
+}
+
+{excit mode  max_excit
+          0         32
+          1         32
+          2         32
+}
+
+{ci blocksize =   5, convtol = 1.00e-06}
+
+{qff 
+ Mode =  0
+ Hii    = +5.90890420e-01
+ Tiii   = -1.52514720e-07
+ Uiiii  = +3.82654380e+00
+ Mode =  1
+ Hii    = +5.59362950e-01
+ Tiii   = -1.53490100e+00
+ Uiiii  = +3.56470680e+00
+ Mode =  2
+ Hii    = +1.04141790e-01
+ Tiii   = +5.99094950e-02
+ Uiiii  = -5.10092670e-02
+ Mode pair =  0 ,  1; pair #   0
+ Tiij  = -1.56076500e+00
+ Tjji  = -5.37980340e-07
+ Uiiij = +3.68644760e-07
+ Ujjji = +7.77257070e-08
+ Uiijj = +3.68911680e+00
+ Mode pair =  0 ,  2; pair #   1
+ Tiij  = -1.49386740e-01
+ Tjji  = -2.82234820e-07
+ Uiiij = -1.67333520e-07
+ Ujjji = -6.27796920e-08
+ Uiijj = -7.56234420e-01
+ Mode pair =  1 ,  2; pair #   2
+ Tiij  = -4.06158810e-02
+ Tjji  = +1.10785930e-01
+ Uiiij = +1.99793290e-01
+ Ujjji = -1.99216760e-01
+ Uiijj = -6.11077200e-01
+}
+
