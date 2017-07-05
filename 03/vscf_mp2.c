@@ -38,6 +38,7 @@
 #define SCF_CONVTOL 1.0e-10			// SCF convergence criteria in hartree
 #define CI_MAX_EXC  4				// default maximal excitation in pre-SCF CI
 #define XRANGE_DFLT 6.0				// default value for xrange
+#define ENERGY_DFLT 4500.0			// default energy threshold for automatic determination of max excit
 
 struct ints4 
 {
@@ -170,7 +171,6 @@ parse_gamess_out(nmodes,npairs,harmonic,xrange,deltax,fdiag,fpair);
 printf(" done \n");
 
 printf("\n Checking input file for data override...");
-parse_excit(filename,nmodes,excit);
 parse_basis(filename,nmodes,xrange,deltax);
 parse_qff  (filename,nmodes,fdiag,fpair);
 printf(" done \n");
@@ -186,11 +186,6 @@ printf ("\n {sizing nmodes = %3d, nbas = %3d}\n",nmodes,nbas);
 printf("\n {basis  mode        xrange       deltax\n"); // print {basis} group
 for (i=0;i<nmodes;i++)
 	printf(" %12d %+12.9f %+12.9f\n",i,xrange[i],deltax[i]);
-printf(" }\n");
-
-printf("\n {excit mode  max_excit\n");
-for (i=0;i<nmodes;i++)
-	printf(" %10d %10d\n",i,excit[i]);
 printf(" }\n");
 
 printf("\n {qff \n");
@@ -367,6 +362,33 @@ printf("\n 1D part finished at %s\n",str);
 
 timestamp_();
 
+// start initial guess
+printf("\n=========================================\n");
+printf(" Initial guess for MAX EXCIT\n");
+
+printf("\n Automatic determinantion of maximal excitation per mode based on excitation threshold = %8.1f cm-1\n",ENERGY_DFLT);
+
+for(i=0;i<nmodes;i++)
+	for(j=1;j<nbas;j++)
+		if (fabs(levels_1d[i][j]-levels_1d[i][0])*CM1 < ENERGY_DFLT)
+			{excit[i]=j+1;} else break;
+
+printf("\n Recommended excitation levels:\n");
+for (i=0;i<nmodes;i++)
+	printf("mode = %2d, excit = %2d, 1D energy = %8.1f\n",i,excit[i],fabs(levels_1d[i][excit[i]-1]-levels_1d[i][0])*CM1);
+
+printf("\n Checking input file for excitation override...");
+parse_excit(filename,nmodes,excit);
+printf(" done \n");
+
+printf("\n Excitation levels after override:\n");
+
+printf("\n {excit mode  max_excit\n");
+for (i=0;i<nmodes;i++)
+	printf(" %10d %10d\n",i,excit[i]);
+printf(" }\n");
+
+
 // start CI
 printf("\n=========================================\n");
 printf(" General CSF-based VCI program\n");
@@ -470,7 +492,7 @@ for(mode=0;mode<nmodes;mode++)
 // Allocate space for H (Hamiltonian)
 // TODO: memory usage printout
 
-double (*h)[horder] = mkl_malloc( sizeof(double[horder][horder]),32);
+double (*h)[horder] = mkl_malloc( sizeof(double[horder][horder]),64);
 if (h==NULL){
 	printf(" Error while allocating memory for h \n");
 	exit (1);
@@ -597,7 +619,7 @@ printmat3(horder,&h[0][0]); // */
 
 // Diagonalise H
 
-double (*levels_ci) = mkl_malloc(sizeof(double[horder]),32);
+double (*levels_ci) = mkl_malloc(sizeof(double[horder]),64);
 
 lapack_int info;
 char jobz='V',uplo='U';
@@ -922,7 +944,7 @@ double mp1_energy = 0.0;
 		}
 // dtemp *= (double) (nmodes-1);
 
-printf ("\n Final result : SCF energy = %15.10f, MP1 correction = %15.10f, Total = %15.10f\n",scf_energy,mp1_energy,scf_energy-mp1_energy);
+printf ("\n Final result : SCF energy = %15.10f, MP1 correction = %15.10f, Total = %15.10f\n",scf_energy,-mp1_energy,scf_energy-mp1_energy);
 
 mp1_energy = scf_energy-mp1_energy;
 
@@ -1093,7 +1115,7 @@ for(mode=0;mode<nmodes;mode++)
 
 // Print final result
 
-printf("\n Calculated transition energies (cm-1):\n\n");
+printf("\n Calculated transition energies (relative to ground state, cm-1):\n\n");
 
 for(i=1;i<max_states;i++)
 {
